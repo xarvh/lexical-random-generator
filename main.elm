@@ -75,17 +75,10 @@ cmdGenerate =
     Random.generate Generate <| Random.list 30 (NameGenerator.generator le "ship")
 
 
-fix s =
---     s
-    String.words s
-    |> List.map (String.Extra.capitalize True)
-    |> String.join " "
-
-
 update msg model =
     case msg of
         Generate strings ->
-            ( List.map fix strings, Cmd.none )
+            ( List.map NameGenerator.capitalize strings, Cmd.none )
 
 
 

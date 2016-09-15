@@ -1,6 +1,7 @@
 module NameGenerator exposing
     ( Definition, Lexicon
     , generator
+    , capitalize
     , fromString
     )
 
@@ -8,14 +9,19 @@ module NameGenerator exposing
 import Dict exposing (Dict)
 import Random.Pcg as Random exposing (Generator)
 import String
-import Regex
+import Regex as R
 
 
 
 -- types
 
+type Fragment
+    = Constant String
+    | Key String
+
+
 type alias Definition =
-    List String
+    List Fragment
 
 
 type alias Lexicon =
@@ -43,9 +49,9 @@ generator lexicon key =
                 -- TODO: PR to mgold/elm-random-pcb to add a mapN : (List a -> b) -> List (Generator a) -> Generator b
                 foldDefinition definitionFragment accumulatedGenerator =
                     Random.map2 (++) accumulatedGenerator <|
-                        case String.uncons definitionFragment of
-                            Just ( '$', key ) -> generator reducedLexicon key
-                            _ -> Random.constant definitionFragment
+                        case definitionFragment of
+                            Key key -> generator reducedLexicon key
+                            Constant string -> Random.constant string
 
 
                 definitionToGenerator : Definition -> Generator String
@@ -53,6 +59,14 @@ generator lexicon key =
                     List.foldl foldDefinition (Random.constant "") definition
             in
                 Random.choices <| List.map definitionToGenerator definitions
+
+
+
+-- Capitalisation helper
+
+capitalize : String -> String
+capitalize =
+    R.replace R.All (R.regex "\\b\\w") (.match >> String.toUpper)
 
 
 
@@ -65,8 +79,8 @@ fromString stringLexicon =
             let
                 chunkToFrags chunk =
                     case String.split "}" chunk of
-                        key :: constant :: [] -> [ "$" ++ key, constant ]
-                        _ -> [chunk]
+                        key :: constant :: [] -> [ Key key, Constant constant ]
+                        _ -> [Constant chunk]
             in
                 stringDefinition
                 |> String.split "{"
@@ -77,8 +91,10 @@ fromString stringLexicon =
         addToLexiconKey key line lexicon =
             let
                 newDefinitions =
-                    String.trim line
+                    line
                     |> String.split ","
+                    |> List.map String.trim
+                    |> List.filter ((/=) "")
                     |> List.map stringToDefinition
 
                 existingDefinitions =
@@ -90,10 +106,10 @@ fromString stringLexicon =
 
         addLine : String -> ( String, Lexicon ) -> ( String, Lexicon )
         addLine line ( currentKey, lexicon ) =
-            if Regex.contains (Regex.regex "^\\s*#") line
+            if R.contains (R.regex "^\\s*#") line
             then ( currentKey, lexicon )
             else
-                if Regex.contains (Regex.regex "^\\s") line
+                if R.contains (R.regex "^\\s") line
                 then ( currentKey, addToLexiconKey currentKey line lexicon )
                 else ( line, lexicon )
     in
