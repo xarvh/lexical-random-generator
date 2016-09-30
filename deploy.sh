@@ -1,7 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 ADD=index.html
-BUILD="elm-make main.elm"
 
 
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
@@ -18,10 +17,13 @@ fi
 
 git branch -D gh-pages
 git checkout -b gh-pages
-$BUILD
+
+cd $(dirname $0)/examples
+elm-make --yes Starships.elm --output=../index.html
+cd ..
+
 git add -f $ADD
 git commit -m Publish
 git push -f origin gh-pages
 
 git checkout $CURRENT_BRANCH
-
