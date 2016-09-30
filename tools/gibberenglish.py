@@ -35,6 +35,6 @@ src = [ w for w in src if not exclude2(w) ]
 
 open('gibberenglish.lex', 'wt').write(phonems.phonems_as_string(
     pyphen_language = 'en_UK',
-    max_length = 50,
+    max_length = 200,
     words = src,
 ))
