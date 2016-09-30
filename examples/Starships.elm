@@ -12,26 +12,29 @@ import Task
 
 lexicon =
     """
-# this is a comment
+# This defines how to generate a `fleet` name
+# It is used to generate the list *headers* you can see on the right ->
+fleet
+    # Three different ways of generating a fleet name
+    # (Try to add one and see what happens!)
+    {color} Fleet
+    {properNoun} Fleet
+    {noun} Fleet
 
-ini
-    # definitions can be separed by comma or newline, it's the same
-    in,re,un,con,de,dis,ex,im,an,com,en,al,pro,pre,per,over,as,ar,di,mis,be,ac,sub,ad,ma,mar,car,out,ap,au,or,for,ob,
-    par,co,se,em,man,vi,non,am,mo,su,ab,cor,ca,pa,es,hy,can,bar,mi,col,so,mon,at,up,ir,ver,ra,mer,lu,gen,trans,pe,ro,
-
-mid
-    i,ti,a,o,er,ter,u,ri,to,si,cal,di,ca,al,ta,li,ni,tion,per,der,ra,tu,e,ful,na,ma,la,ing,fi,sa,ci,ous,con,is,en,re,
-
-end
-    ly,es,ness,er,est,ers,tions,ty,tion,able,ic,ings,ments,ry,ties,tors,al,cal,man,ters,less,cy,ous,tive,ful,men,
-    ates,ble,an,tic,ists,gy,na,ies,sions,son,ans,ta,ment,ton,ism,ries,ics,bles,bly,als,fies,fy,la,da,en,lates,
-
-properNoun
-    {ini}{end}
-    {ini}{mid}{end}
+# This defines how to generate a `ship` name
+# It is used to generate the list *entries* you can see on the right ->
+ship
+    {noun}
+    {properNoun}
+    {color} {properNoun}
+    {color} {noun}
+    {superlativeAdjective}
+    {pretentious}
 
 adverb
-    always,inevitably,necessarily,surely,inescapably,assuredly
+    # you can divide the options by comma or newline, there is no difference
+    always,inevitably,necessarily
+    surely,inescapably,assuredly
 
 superlativeAdjective
     flawless,victorious,favoured,triumphant,successful,fortunate,lucky,outstanding,strong,illustrious,splendid,fierce
@@ -54,23 +57,27 @@ potentiallyQualifiedNoun
     {noun} of {properNoun}
     {noun} of the Gods
 
-exalted
+pretentious
     {adverb} {superlativeAdjective}
     {adverb} {superlativeAdjective} {potentiallyQualifiedNoun}
     {superlativeAdjective} {potentiallyQualifiedNoun}
 
-ship
-    {noun}
-    {properNoun}
-    {color} {properNoun}
-    {color} {noun}
-    {superlativeAdjective}
-    {exalted}
+properNoun
+    {ini}{end}
+    {ini}{mid}{end}
 
-fleet
-    {color} Fleet
-    {properNoun} Fleet
-    {noun} Fleet
+# Phonems can be generated from dictionaries or lists of words.
+# Check inside the tools/ directory!
+ini
+    in,re,un,con,de,dis,ex,im,an,com,en,al,pro,pre,per,over,as,ar,di,mis,be,ac,sub,ad,ma,mar,car,out,ap,au,or,for,ob,
+    par,co,se,em,man,vi,non,am,mo,su,ab,cor,ca,pa,es,hy,can,bar,mi,col,so,mon,at,up,ir,ver,ra,mer,lu,gen,trans,pe,ro,
+
+mid
+    i,ti,a,o,er,ter,u,ri,to,si,cal,di,ca,al,ta,li,ni,tion,per,der,ra,tu,e,ful,na,ma,la,ing,fi,sa,ci,ous,con,is,en,re,
+
+end
+    ly,es,ness,er,est,ers,tions,ty,tion,able,ic,ings,ments,ry,ties,tors,al,cal,man,ters,less,cy,ous,tive,ful,men,
+    ates,ble,an,tic,ists,gy,na,ies,sions,son,ans,ta,ment,ton,ism,ries,ics,bles,bly,als,fies,fy,la,da,en,lates,
 """
 
 
