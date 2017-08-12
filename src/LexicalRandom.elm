@@ -12,15 +12,15 @@ module LexicalRandom
 
 # Basics
 
-@docs Lexicon,fromString,generator
+@docs fromString, generator
 
 
 # Advanced
 
-You need this stuff only if you want to dynamically add entries
+You need to understand this stuff only if you want to dynamically add entries
 to the lexicon.
 
-@docs Fragment, Definition
+@docs Lexicon, Fragment, Definition
 
 -}
 
@@ -50,7 +50,9 @@ type alias Definition =
     List Fragment
 
 
-{-| -}
+{-| The Lexicon is a Dict mapping an entry identifier to an Array of all the
+alternative Definitions that can be used to generate a name.
+-}
 type alias Lexicon =
     Dict String (Array Definition)
 
@@ -65,12 +67,18 @@ choices default array =
         |> Random.andThen (Maybe.withDefault default)
 
 
-{-| Generate a name given a lexicon and a key of that lexicon
+{-| The function takes:
 
-    `String` is a filler string, used when some definition references a key
-    that does not exist in the lexicon.
+  - A filler String
+  - A Lexicon
+  - The name of an entry in the Lexicon
 
-    The filler function is also used to break possible infinite recursions caused by a key.
+and returns a random generator for the specified entry.
+
+The filler string is used when some definition references a key
+that does not exist in the Lexicon.
+
+The filler function is also used to break possible infinite recursions caused by a key.
 
     nameGenerator =
         LexicalRandom.generator "-" englishGibberishLexicon "properNoun"
