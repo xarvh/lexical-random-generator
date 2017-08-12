@@ -4,7 +4,7 @@ Lexicon-based random name generator
 This package can be used to generate random names according to a given lexicon.
 
 * [Experiment with the lexicon online](https://xarvh.github.io/lexical-random-generator/).
-* [See an example with a better lexicon and dynamic entries](https://xarvh.github.io/lexical-random-generator/real-world).
+* [See an example with a better lexicon and dynamic entries](https://xarvh.github.io/lexical-random-generator/examples/real-world).
 
 The quality of the output depends on the quality of the lexicon.
 
