@@ -1,8 +1,6 @@
 #!/bin/bash
 
-ADD=index.html
-
-
+ROOT=$(dirname $0)
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 
 if [ "$CURRENT_BRANCH" = "" ]; then
@@ -18,11 +16,16 @@ fi
 git branch -D gh-pages
 git checkout -b gh-pages
 
-cd $(dirname $0)/examples
-elm-make --yes Starships.elm --output=../index.html
-cd ..
+cd $ROOT/examples/pages
+elm-make --yes Main.elm --output=../../index.html
+cd ../..
+git add -f index.html
 
-git add -f $ADD
+cd $ROOT/examples/real-world
+elm-make --yes Main.elm --output=index.html
+git add -f index.html
+cd ../..
+
 git commit -m Publish
 git push -f origin gh-pages
 
