@@ -1,6 +1,8 @@
 module LexicalRandom
     exposing
         ( Lexicon
+        , Fragment (..)
+        , Definition
         , generator
         , capitalize
         , fromString
@@ -11,7 +13,9 @@ module LexicalRandom
 
 import Array exposing (Array)
 import Dict exposing (Dict)
-import Random
+import Random exposing (Generator)
+import Random.Array
+import Random.Extra
 import String
 import Regex as R
 
@@ -36,51 +40,31 @@ type alias Lexicon =
 -- Random helpers
 
 
-constant : a -> Random.Generator a
-constant value =
-    Random.map (\_ -> value) Random.bool
-
-
-combine : List (Random.Generator a) -> Random.Generator (List a)
-combine =
-    List.foldr (Random.map2 (::)) (constant [])
-
-
-choices : Random.Generator a -> Array (Random.Generator a) -> Random.Generator a
+choices : Generator a -> Array (Generator a) -> Generator a
 choices default array =
-    (Random.int 0 <| Array.length array - 1)
-        `Random.andThen`
-            \index ->
-                Array.get index array
-                    |> Maybe.withDefault default
+    Random.Array.sample array
+      |> Random.andThen (Maybe.withDefault default)
 
 
 {-| Generate a name given a lexicon and a key of that lexicon
 
-    `(String -> String)` is a filler function, called when some definition references a key
+    `String` is a filler string, used when some definition references a key
     that does not exist in the lexicon.
-    It will be called with the missing key as argument, and its return value will be used
-    as the key's value.
-    This can be used, for example, to provide values from a custom dictionary.
 
-    The filler function is also called to break possible infinite recursions caused by a key.
-
-
-    filler key =
-        Dict.get key customKeys |> Maybe.withDefault key
+    The filler function is also used to break possible infinite recursions caused by a key.
 
     nameGenerator =
-        LexicalRandom.generator filler englishGibberishLexicon "properNoun"
+        LexicalRandom.generator "-" englishGibberishLexicon "properNoun"
 
     ( name, seed ) =
         Random.step nameGenerator seed
 -}
-generator : (String -> String) -> Lexicon -> String -> Random.Generator String
+generator : String -> Lexicon -> String -> Generator String
 generator filler lexicon key =
     case Dict.get key lexicon of
         Nothing ->
             -- either the key is plain invalid, or it is stuck in a loop
-            constant (filler key)
+            Random.Extra.constant filler
 
         Just definitions ->
             let
@@ -94,15 +78,15 @@ generator filler lexicon key =
                             generator filler reducedLexicon key
 
                         Constant string ->
-                            constant string
+                            Random.Extra.constant string
 
                 definitionToGenerator definition =
                     List.map fragmentToGenerator definition
-                        |> combine
+                        |> Random.Extra.combine
                         |> Random.map (String.join "")
             in
                 Array.map definitionToGenerator definitions
-                    |> choices (constant "")
+                    |> choices (Random.Extra.constant "")
 
 
 
@@ -161,4 +145,4 @@ fromString stringLexicon =
             else
                 ( line, lexicon )
     in
-        snd <| List.foldl addLine ( "default", Dict.empty ) (String.lines stringLexicon)
+        Tuple.second <| List.foldl addLine ( "default", Dict.empty ) (String.lines stringLexicon)
