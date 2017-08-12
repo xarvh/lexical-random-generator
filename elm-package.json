@@ -4,13 +4,14 @@
     "repository": "https://github.com/xarvh/lexical-random-generator.git",
     "license": "BSD3",
     "source-directories": [
-        "."
+        "src"
     ],
-    "exposed-modules": [],
+    "exposed-modules": [
+      "LexicalRandom"
+    ],
     "dependencies": {
         "elm-community/random-extra": "2.0.0 <= v < 3.0.0",
-        "elm-lang/core": "5.1.1 <= v < 6.0.0",
-        "elm-lang/html": "2.0.0 <= v < 3.0.0"
+        "elm-lang/core": "5.1.1 <= v < 6.0.0"
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }

@@ -8,6 +8,20 @@ module LexicalRandom
         )
 
 {-| Generate random names based on a lexicon.
+
+
+# Basics
+
+@docs Lexicon,fromString,generator
+
+
+# Advanced
+
+You need this stuff only if you want to dynamically add entries
+to the lexicon.
+
+@docs Fragment, Definition
+
 -}
 
 import Array exposing (Array)
@@ -36,8 +50,7 @@ type alias Definition =
     List Fragment
 
 
-{-|
--}
+{-| -}
 type alias Lexicon =
     Dict String (Array Definition)
 
