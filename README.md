@@ -1,9 +1,16 @@
 Lexicon-based random name generator
 -----------------------------------
 
-See it running [here](https://xarvh.github.io/lexical-random-generator/)
+This package can be used to generate random names according to a given lexicon.
 
-```
+* [Experiment with the lexicon online](https://xarvh.github.io/lexical-random-generator/).
+* [See an example with a better lexicon and dynamic entries](https://xarvh.github.io/lexical-random-generator/real-world).
+
+The quality of the output depends on the quality of the lexicon.
+
+You can check the (undocumented) [tools I used to generate the english lexion](https://github.com/xarvh/lexical-random-generator/tree/master/tools).
+
+```elm
 import LexicalRandom
 
 
@@ -33,10 +40,10 @@ address
 
 streetNamesLexicon =
     LexicalRandom.fromString lexiconString
-        |> Random.map LexicalRandom.capitalize
+        |> Random.map String.Extra.toTitleCase
 
 
 streetNamesRandomGenerator : Random.Generator String
 streetNamesRandomGenerator =
-    LexicalRandom.generator (\key -> "[missing key`" ++ key ++ "`]") streetNamesLexicon "address"
+    LexicalRandom.generator "???" streetNamesLexicon "address"
 ```

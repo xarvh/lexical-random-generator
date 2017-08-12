@@ -1,10 +1,9 @@
 module LexicalRandom
     exposing
         ( Lexicon
-        , Fragment (..)
+        , Fragment(..)
         , Definition
         , generator
-        , capitalize
         , fromString
         )
 
@@ -17,21 +16,28 @@ import Random exposing (Generator)
 import Random.Array
 import Random.Extra
 import String
-import Regex as R
+import Regex exposing (regex)
 
 
 -- types
 
 
+{-| A fragment is used to generate a part of a name.
+It can either be a constant String, either a reference to an lexicon entry.
+-}
 type Fragment
     = Constant String
     | Key String
 
 
+{-| A Definition is a List of Fragments used to generate a single name
+-}
 type alias Definition =
     List Fragment
 
 
+{-|
+-}
 type alias Lexicon =
     Dict String (Array Definition)
 
@@ -43,7 +49,7 @@ type alias Lexicon =
 choices : Generator a -> Array (Generator a) -> Generator a
 choices default array =
     Random.Array.sample array
-      |> Random.andThen (Maybe.withDefault default)
+        |> Random.andThen (Maybe.withDefault default)
 
 
 {-| Generate a name given a lexicon and a key of that lexicon
@@ -58,6 +64,7 @@ choices default array =
 
     ( name, seed ) =
         Random.step nameGenerator seed
+
 -}
 generator : String -> Lexicon -> String -> Generator String
 generator filler lexicon key =
@@ -89,19 +96,8 @@ generator filler lexicon key =
                     |> choices (Random.Extra.constant "")
 
 
-
--- Capitalisation helper
-
-
-capitalize : String -> String
-capitalize =
-    R.replace R.All (R.regex "\\b\\w") (.match >> String.toUpper)
-
-
-
--- Load a lexicon from a multi-line string
-
-
+{-| Parses a Lexicon from a multi-line string
+-}
 fromString : String -> Lexicon
 fromString stringLexicon =
     let
@@ -138,11 +134,12 @@ fromString stringLexicon =
 
         addLine : String -> ( String, Lexicon ) -> ( String, Lexicon )
         addLine line ( currentKey, lexicon ) =
-            if R.contains (R.regex "^\\s*#") line then
+            if Regex.contains (regex "^\\s*#") line then
                 ( currentKey, lexicon )
-            else if R.contains (R.regex "^\\s") line then
+            else if Regex.contains (regex "^\\s") line then
                 ( currentKey, addToLexiconKey currentKey line lexicon )
             else
                 ( line, lexicon )
     in
-        Tuple.second <| List.foldl addLine ( "default", Dict.empty ) (String.lines stringLexicon)
+        List.foldl addLine ( "default", Dict.empty ) (String.lines stringLexicon)
+            |> Tuple.second
